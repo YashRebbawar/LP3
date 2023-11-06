@@ -1,0 +1,191 @@
+Prac 1
+def fibonacci_non_recursive(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    fibonacci_series = [0, 1]
+    for i in range(2, n):
+        next_num = fibonacci_series[i - 1] + fibonacci_series[i - 2]
+        fibonacci_series.append(next_num)
+    return fibonacci_series
+
+
+n = int(input("Enter the number of Fibonacci numbers to generate: "))
+fib_series = fibonacci_non_recursive(n)
+print("Fibonacci Series (Non-Recursive):", fib_series)
+
+###########################################################################
+Prac2
+from collections import Counter
+
+class NodeTree(object):
+    def __init__(self, left=None, right=None):
+        self.left = left
+        self.right = right
+
+    def children(self):
+        return self.left, self.right
+
+    def __str__(self):
+        return f'{self.left}, {self.right}'
+
+def huffman_code_tree(node, binString=''):
+    '''
+    Function to find HuffmanCode
+    '''
+    if type(node) is str:
+        return {node: binString}
+
+    (l, r) = node.children()
+    d = dict()
+    d.update(huffman_code_tree(l, binString + '0'))
+    d.update(huffman_code_tree(r, binString + '1'))
+    return d
+
+def make_tree(nodes):
+    '''
+    Function to make tree
+    :param nodes: Nodes
+    :return: Root of the tree
+    '''
+    while len(nodes) > 1:
+        (key1, c1) = nodes[-1]
+        (key2, c2) = nodes[-2]
+        nodes = nodes[:-2]
+        node = NodeTree(key1, key2)
+        nodes.append((node, c1 + c2))
+        nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+    return nodes[0][0]
+
+if __name__ == '__main__':
+    string = 'BCAADDDCCACACAC'
+    freq = dict(Counter(string))
+    freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+    node = make_tree(freq)
+    encoding = huffman_code_tree(node)
+    for i in encoding:
+        print(f'{i} : {encoding[i]}')
+
+#########################################################################
+Prac3
+class Item:
+    def __init__(self, weight, value):
+        self.weight = weight
+        self.value = value
+        self.ratio = value / weight
+
+
+def fractional_knapsack(max_weight, items):
+    items.sort(key=lambda x: x.ratio, reverse=True)
+    total_value = 0
+    for item in items:
+        if max_weight >= item.weight:
+            max_weight -= item.weight
+            total_value += item.value
+        else:
+            fraction = max_weight / item.weight
+            total_value += item.value * fraction
+            break
+    return total_value
+
+
+if __name__ == "__main__":
+    items = [Item(10, 60), Item(20, 100), Item(30, 120)]
+    max_weight = 50
+    max_value = fractional_knapsack(max_weight, items)
+    print(f"The maximum value that can be obtained is: {max_value}")
+
+#########################################################################
+Prac4
+def knapSack(W, wt, val, n):
+    K = [[0 for x in range(W + 1)] for x in range(n + 1)]
+    # Build table K[][] in bottom up manner
+    for i in range(n + 1):
+        for w in range(W + 1):
+            if i == 0 or w == 0:
+                K[i][w] = 0
+            elif wt[i - 1] <= w:
+                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w])
+            else:
+                K[i][w] = K[i - 1][w]
+    return K[n][W]
+
+# Driver program to test the above function
+val = [60, 100, 120]
+wt = [10, 20, 30]
+W = 50
+n = len(val)
+print(knapSack(W, wt, val, n))
+
+###########################################################################
+Prac5
+print("Enter the number of queens")
+N = int(input())
+
+board = [[0] * N for _ in range(N)]
+
+
+def is_attack(i, j):
+    for k in range(0, N):
+        if board[i][k] == 1 or board[k][j] == 1:
+            return True
+    # checking diagonals
+    for k in range(0, N):
+        for l in range(0, N):
+            if (k + l == i + j) or (k - l == i - j):
+                if board[k][l] == 1:
+                    return True
+    return False
+
+
+def N_queen(n):
+    if n == 0:
+        return True
+    for i in range(0, N):
+        for j in range(0, N):
+            if (not is_attack(i, j)) and (board[i][j] != 1):
+                board[i][j] = 1
+                if N_queen(n - 1) == True:
+                    return True
+                board[i][j] = 0
+    return False
+
+
+N_queen(N)
+for i in board:
+    print(i)
+
+##########################################################################
+Prac 6
+import random
+
+# Deterministic Quick Sort
+def deterministic_quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    else:
+        pivot = arr[0]
+        left = [x for x in arr if x < pivot]
+        middle = [x for x in arr if x == pivot]
+        right = [x for x in arr if x > pivot]
+        return deterministic_quick_sort(left) + middle + deterministic_quick_sort(right)
+
+# Randomized Quick Sort
+def randomized_quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    else:
+        pivot = random.choice(arr)
+        left = [x for x in arr if x < pivot]
+        middle = [x for x in arr if x == pivot]
+        right = [x for x in arr if x > pivot]
+        return randomized_quick_sort(left) + middle + randomized_quick_sort(right)
+
+# Example usage
+arr = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
+print("Original Array:", arr)
+print("Deterministic Quick Sort:", deterministic_quick_sort(arr))
+print("Randomized Quick Sort:", randomized_quick_sort(arr))
